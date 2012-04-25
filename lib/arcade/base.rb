@@ -79,7 +79,7 @@ class Arcade::GameWindow < Gosu::Window
   def button_down id
   end
 
-  def draw_square upper_left, width, height, color = Gosu::Color::WHITE
+  def draw_square upper_left, width, height, color = Arcade::Color::WHITE
     x, y = upper_left
 
     draw_quad x,       y,        color,
@@ -91,7 +91,7 @@ end
 
 class Arcade::GameObject
   PROPERTIES = [:x, :y, :height, :width, :color, :name, :velocity]
-  DEFAULTS   = {:color => Gosu::Color::WHITE, :velocity => Arcade::Velocity::ZERO}
+  DEFAULTS   = {:color => Arcade::Color::WHITE, :velocity => Arcade::Velocity::ZERO}
 
   PROPERTIES.each do |prop|
     attr_accessor prop
