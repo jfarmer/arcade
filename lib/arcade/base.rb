@@ -157,6 +157,22 @@ class Arcade::GameObject
       self.update(dt)
     end
   end
+  
+  def top
+    @y
+  end
+
+  def bottom
+    @y + height
+  end
+
+  def left
+    @x
+  end
+
+  def right
+    @x + width
+  end
 
   def move_up pixels
     @y -= pixels
