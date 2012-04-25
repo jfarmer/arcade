@@ -1,6 +1,6 @@
 class Arcade::Velocity < Vector
-  HORIZ_REFLECT = Matrix[[1,0], [0,-1]]
-  VERT_REFLECT  = Matrix[[-1,0], [0,0]]
+  HORIZ_REFLECT = Matrix[[-1,0], [0,1]]
+  VERT_REFLECT  = Matrix[[1,0], [0,-1]]
 
   ZERO = Arcade::Velocity[0,0]
 
