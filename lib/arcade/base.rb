@@ -184,6 +184,10 @@ class Arcade::GameObject
     @collision_listeners.has_key? klass
   end
 
+  def on_collides_with klass, &block
+    @collision_listeners[klass] = block
+  end
+
   def collided_with other
     if self.can_collide_with?(other.class)
       instance_exec other, &@collision_listeners[other.klass]
