@@ -80,7 +80,7 @@ class Arcade::GameWindow < Gosu::Window
                :right
              end
 
-      @object.hit_edge(edge) if edge
+      object.hit_edge(edge) if edge
     end
 
     @objects.each do |object|
