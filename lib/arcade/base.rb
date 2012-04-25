@@ -69,6 +69,18 @@ class Arcade::GameWindow < Gosu::Window
           object.collided_with(other)
         end
       end
+      
+      edge = if @object.top < 0
+               :top
+             elsif @object.bottom > self.height
+               :bottom
+             elsif @object.left < 0
+               :left
+             elsif @object.right > self.width
+               :right
+             end
+
+      @object.hit_edge(edge) if edge
     end
 
     @objects.each do |object|
@@ -129,6 +141,7 @@ class Arcade::GameObject
 
     @keypress_listeners  = {}
     @collision_listeners = {}
+    @edge_callback       = nil
 
     instance_exec &block
   end
@@ -220,6 +233,17 @@ class Arcade::GameObject
         top > other.bottom ||
         right < other.left ||
         left > other.right)
+    end
+  end
+  
+  def on_hit_edge &block
+    @edge_callback = block
+  end
+  
+  # One of :top, :bottom, :left, or :right
+  def hit_edge edge
+    if @edge_callback
+      instance_exec edge, &@edge_callback
     end
   end
 end
