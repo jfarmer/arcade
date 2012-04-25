@@ -12,10 +12,7 @@ module Button
   end
 end
 
-module Arcade
-  module Color
-    include Gosu::Color
-  end
+class Arcade::Color < Gosu::Color
 end
 
 class Arcade::GameWindow < Gosu::Window
