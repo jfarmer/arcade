@@ -64,7 +64,7 @@ class Arcade::GameWindow < Gosu::Window
     end
 
     @objects.each do |object|
-      [@objects - object].each do |other|
+      [@objects - [object]].each do |other|
         if object.collides_with?(other)
           object.collided_with(other)
         end
