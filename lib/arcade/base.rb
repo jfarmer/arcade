@@ -12,7 +12,13 @@ module Button
   end
 end
 
-class GameWindow < Gosu::Window
+module Arcade
+  module Color
+    include Gosu::Color
+  end
+end
+
+class Arcade::GameWindow < Gosu::Window
   def initialize width, height    
     @current_time = Gosu::milliseconds
     @objects      = []
@@ -81,7 +87,7 @@ class GameWindow < Gosu::Window
   end
 end
 
-class GameObject
+class Arcade::GameObject
   PROPERTIES = [:x, :y, :height, :width, :color, :name]
   DEFAULTS   = {:color => Gosu::Color::WHITE}
   
