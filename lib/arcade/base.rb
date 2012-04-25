@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'gosu'
 
-module Button
+module Arcade
   module Keyboard
     Gosu::Button.constants.each do |cons|
       if cons =~ /^Kb/
