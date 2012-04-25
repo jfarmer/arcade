@@ -65,7 +65,6 @@ class Arcade::GameWindow < Gosu::Window
 
     @objects.each do |object|
       (@objects - [object]).each do |other|
-        puts "Testing collision between #{object} => #{other}"
         if object.collides_with?(other)
           puts "Collision between #{object} => #{other}"
           object.collided_with(other)
@@ -214,6 +213,7 @@ class Arcade::GameObject
 
   def collides_with? other
     if !other.kind_of?(self.class) || other == self
+      puts "So false, asshole"
       false
     else
       !(bottom < other.top ||
