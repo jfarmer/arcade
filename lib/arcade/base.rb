@@ -1,6 +1,3 @@
-require 'rubygems'
-require 'gosu'
-
 module Arcade
   module Keyboard
     Gosu::Button.constants.each do |cons|
@@ -85,8 +82,8 @@ class Arcade::GameWindow < Gosu::Window
 end
 
 class Arcade::GameObject
-  PROPERTIES = [:x, :y, :height, :width, :color, :name]
-  DEFAULTS   = {:color => Gosu::Color::WHITE}
+  PROPERTIES = [:x, :y, :height, :width, :color, :name, :velocity]
+  DEFAULTS   = {:color => Gosu::Color::WHITE, :velocity => Arcade::Velocity::ZERO}
   
   PROPERTIES.each do |prop|
     attr_accessor prop
@@ -140,6 +137,10 @@ class Arcade::GameObject
   end
   
   def update dt
+    unless self.velocity.zero?
+      self.x += self.velocity.element(0)
+      self.y += self.velocity.element(1)
+    end
   end
   
   def move_up pixels
