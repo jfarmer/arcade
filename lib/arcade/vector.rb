@@ -5,11 +5,11 @@ class Arcade::Velocity < Vector
   ZERO = Arcade::Velocity[0,0]
 
   def reflect_horizontally
-    HORIZ_REFLECT * self
+    Arcade::Velocity[*(HORIZ_REFLECT * self).to_a]
   end
 
   def reflect_vertically
-    VERT_REFLECT * self
+    Arcade::Velocity[*(VERT_REFLECT * self).to_a]
   end
 
   def zero?
