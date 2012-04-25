@@ -205,8 +205,10 @@ class Arcade::GameObject
   end
 
   def collided_with other
-    if self.can_collide_with?(other.class)
-      instance_exec other, &@collision_listeners[other.class]
+    klass = other.class
+
+    if self.can_collide_with?(klass)
+      instance_exec other, &@collision_listeners[klass]
     end
   end
 
