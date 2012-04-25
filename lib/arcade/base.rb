@@ -70,13 +70,13 @@ class Arcade::GameWindow < Gosu::Window
         end
       end
       
-      edge = if @object.top < 0
+      edge = if object.top < 0
                :top
-             elsif @object.bottom > self.height
+             elsif object.bottom > self.height
                :bottom
-             elsif @object.left < 0
+             elsif object.left < 0
                :left
-             elsif @object.right > self.width
+             elsif object.right > self.width
                :right
              end
 
