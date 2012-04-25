@@ -118,7 +118,7 @@ class Arcade::GameObject
 
   def initialize &block
     PROPERTIES.each do |prop|
-      val = self.class.send(prop) || GameObject::DEFAULTS[prop] || 0
+      val = self.class.send(prop) || Arcade::GameObject::DEFAULTS[prop] || 0
       self.send(:"#{prop}=", val)
     end
     
