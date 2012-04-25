@@ -212,7 +212,7 @@ class Arcade::GameObject
   end
 
   def collides_with? other
-    if !other.kind_of?(self.class) || other == self
+    if !other.kind_of?(GameObject) || other == self
       puts "So false, asshole"
       false
     else
