@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'ostruct'
 require 'matrix'
 require 'gosu'
 

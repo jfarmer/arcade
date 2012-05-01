@@ -69,7 +69,7 @@ class Arcade::GameWindow < Gosu::Window
           object.collided_with(other)
         end
       end
-      
+
       edge = if object.top < 0
                :top
              elsif object.bottom > self.height
@@ -102,47 +102,61 @@ class Arcade::GameWindow < Gosu::Window
 end
 
 class Arcade::GameObject
-  PROPERTIES = [:x, :y, :height, :width, :color, :name, :velocity]
-  DEFAULTS   = {:color => Arcade::Color::WHITE, :velocity => Arcade::Velocity::ZERO}
+  PROPERTIES = [:x, :y, :height, :width, :color, :name, :velocity, :score]
+  DEFAULTS   = {:color => Arcade::Color::WHITE,
+                :velocity => Arcade::Velocity::ZERO}
 
-  PROPERTIES.each do |prop|
-    attr_accessor prop
-    alias_method :"set_#{prop}", :"#{prop}="
-  end
-
-  alias_method :x_position, :x
-  alias_method :y_position, :y
-  alias_method :set_x_position, :x=
-  alias_method :set_y_position, :y=
+  ALIASES = {:x_position => :x,
+             :y_position => :y,
+             :set_x_position => :x=,
+             :set_y_position => :y=}
 
   attr_reader :window
   attr_reader :keypress_listeners
 
+  def method_missing method, *args
+    method = ALIASES.fetch(method) { method }
+
+    mname = method.id2name
+
+    if prop = mname.scan(/^set_(.+)/).flatten.first
+      @state.send(:"#{prop}=", *args)
+    else
+      @state.send(method, *args)
+    end
+  end
+
   class << self
-    PROPERTIES.each do |prop|
-      attr_accessor prop
-      alias_method :"set_#{prop}", :"#{prop}="
-    end
-
-    def config
-      self
-    end
-
     def set_defaults &block
-      instance_eval &block
+      @default_block = block
+    end
+
+    def has_defaults?
+      !@default_block.nil?
+    end
+
+    def defaults
+      @default_block
+    end
+  end
+
+  def setup_defaults
+    DEFAULTS.each do |prop, val|
+      self.send(:"#{prop}=", val)
+    end
+
+    if self.class.has_defaults?
+      instance_exec &self.class.defaults
     end
   end
 
   def initialize &block
-    PROPERTIES.each do |prop|
-      val = self.class.send(prop) || Arcade::GameObject::DEFAULTS[prop] || 0
-      self.send(:"#{prop}=", val)
-    end
-
+    @state = OpenStruct.new
     @keypress_listeners  = {}
     @collision_listeners = {}
     @edge_callback       = nil
 
+    setup_defaults
     instance_exec &block
   end
 
@@ -168,37 +182,37 @@ class Arcade::GameObject
       self.update(dt)
     end
   end
-  
+
   def top
-    @y
+    self.y
   end
 
   def bottom
-    @y + height
+    self.y + height
   end
 
   def left
-    @x
+    self.x
   end
 
   def right
-    @x + width
+    self.x + width
   end
 
   def move_up pixels
-    @y -= pixels
+    self.y -= pixels
   end
 
   def move_down pixels
-    @y += pixels
+    self.y += pixels
   end
 
   def move_left pixels
-    @x -= pixels
+    self.x -= pixels
   end
 
   def move_right pixels
-    @x += pixels
+    self.x += pixels
   end
 
   def on_keypress key, &block
@@ -235,11 +249,11 @@ class Arcade::GameObject
         left > other.right)
     end
   end
-  
+
   def on_hit_edge &block
     @edge_callback = block
   end
-  
+
   # One of :top, :bottom, :left, or :right
   def hit_edge edge
     if @edge_callback
