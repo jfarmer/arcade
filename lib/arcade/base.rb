@@ -1,4 +1,10 @@
 module Arcade
+  module Errors
+    class NameError < StandardError;end
+  end
+end
+
+module Arcade
   module Keyboard
     Gosu::Button.constants.each do |cons|
       if cons =~ /^Kb/
@@ -15,7 +21,7 @@ end
 class Arcade::GameWindow < Gosu::Window
   def initialize width, height
     @current_time = Gosu::milliseconds
-    @objects      = []
+    @objects      = {}
 
     @keypress_listeners  = Hash.new { |h,k| h[k] = [] }
 
@@ -27,12 +33,16 @@ class Arcade::GameWindow < Gosu::Window
       self.add_listener key, game_object
     end
 
-    @objects << game_object
+    @objects.merge! game_object.name => game_object
   end
 
   def register game_object
     game_object.window = self
     self.add_object(game_object)
+  end
+
+  def get_object object_name
+    @objects[object_name]
   end
 
   def add_listener key, object
@@ -48,7 +58,7 @@ class Arcade::GameWindow < Gosu::Window
   end
 
   def draw
-    @objects.each do |game_object|
+    each_object do |game_object|
       game_object.draw
     end
   end
@@ -63,8 +73,8 @@ class Arcade::GameWindow < Gosu::Window
       end
     end
 
-    @objects.each do |object|
-      (@objects - [object]).each do |other|
+    each_object do |object|
+      (@objects.values - [object]).each do |other|
         if object.collides_with?(other)
           object.collided_with(other)
         end
@@ -83,7 +93,7 @@ class Arcade::GameWindow < Gosu::Window
       object.hit_edge(edge) if edge
     end
 
-    @objects.each do |object|
+    each_object do |object|
       object._update(dt)
     end
   end
@@ -98,6 +108,13 @@ class Arcade::GameWindow < Gosu::Window
               x+width, y,        color,
               x+width, y+height, color,
               x,       y+height,  color
+  end
+
+  private
+  def each_object
+    @objects.each do |name, object|
+      yield object
+    end
   end
 end
 
@@ -122,7 +139,9 @@ class Arcade::GameObject
     if prop = mname.scan(/^set_(.+)/).flatten.first
       @state.send(:"#{prop}=", *args)
     else
-      @state.send(method, *args)
+      @state.send(method, *args).tap do |val|
+        warn "WARNING: Called #{self.class}##{method}, but it returned nil. You should set a default value." if val.nil?
+      end
     end
   end
 
@@ -158,10 +177,13 @@ class Arcade::GameObject
 
     setup_defaults
     instance_exec &block
+
+    # Every GameObject must have a name
+    raise Arcade::Errors::NameError, "#{self.class}#name is nil" if self.name.nil?
   end
 
-  def config
-    self
+  def get_object object_name
+    window.get_object object_name
   end
 
   def draw
@@ -233,7 +255,6 @@ class Arcade::GameObject
 
   def collided_with other
     klass = other.class
-
     if self.can_collide_with?(klass)
       instance_exec other, &@collision_listeners[klass]
     end
