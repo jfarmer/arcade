@@ -264,10 +264,27 @@ class Arcade::GameObject
     if !other.kind_of?(Arcade::GameObject) || other == self
       false
     else
-      !(bottom < other.top ||
+      hit = !(bottom < other.top ||
         top > other.bottom ||
         right < other.left ||
         left > other.right)
+
+      if hit
+        other.hit_side = if bottom >= other.top && top <= other.top && left <= other.right && right >= other.left
+                           :top
+                         elsif bottom >= other.bottom && top <= other.bottom && left <= other.right && right >= other.left
+                           :bottom
+                         elsif bottom >= other.top && top <= other.bottom && right >= other.left && left <= other.left
+                           :left
+                         else
+                           :right
+                         end
+
+      else
+        other.hit_side = false
+      end
+
+      hit
     end
   end
 
