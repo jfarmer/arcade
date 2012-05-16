@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    arcade (0.2.1)
+    arcade (0.3.0)
       gosu
 
 GEM
